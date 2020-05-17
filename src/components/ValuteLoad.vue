@@ -7,7 +7,7 @@
                 <div class="spinner-border text-info text-center"></div>
             </div>
 
-            <!-- Отрисовываем таблицу результатов-->
+            <!-- Таблица результатов -->
             <table class="table table-borderless" v-else>
                 <thead>
                     <tr>
@@ -18,22 +18,25 @@
                     </tr>
                 </thead>
                 <tbody>
+
                     <tr v-for="item in valutes" :key="item.id">
                         <th scope="row">{{ item.CharCode }}</th>
                         <td>{{ item.Name }}</td>
                         <td>{{ item.Value }}</td>
                         <td>
-                            <!-- Если элемент есть в избранных валютах, выводим подсказку вместо кнопки-->
+
                             <div v-if="item.Favorites">
                                 В избранном
                             </div>
                             <button v-else
                                 type="button"
                                 class="btn btn-success p-1"
-                                @click="addValute(item)"> Добавить
+                                @click="setValute(item)"> Добавить
                             </button>
+
                         </td>
                     </tr>
+
                 </tbody>
             </table>
 
@@ -45,51 +48,49 @@
     import axios from 'axios'
     export default {
         name: "ValuteLoad",
-        data(){
-            return{
+        data() {
+            return {
                 loader: true,
                 valutes: []
             }
         },
         mounted() {
-            // загружаем данные по валютам из API
-            axios.get('https://www.cbr-xml-daily.ru/daily_json.js')
-                    .then(response => {
-                        var resultAPI = Object.values(response.data.Valute)
-                        this.valutes = []
-                        for (let z = 0; z < resultAPI.length; z++) {
-                            var obj = {
-                                CharCode: resultAPI[z].CharCode,
-                                Name: resultAPI[z].Name,
-                                Value: resultAPI[z].Value,
-                                Favorites: false
-                            }
-                            // после преобразования сохраняем в локальный массив valutes
-                            this.valutes.push(obj)
-                        }
+            axios.get('https://www.cbr-xml-daily.ru/daily_json.js').then(response => {
+                let resultAPI = response.data.Valute;
+                let arrayAPI = Object.values(resultAPI);
+                let lengthArrayAPI = arrayAPI.length;
 
-                        // выключаем лоадер когда ответ от API получен
-                        this.loader = false
+                //синхронизируем полученные из API валюты с данными из Local Storage
+                for (let i = 0; i < lengthArrayAPI; i++) {
+                    let obj = {
+                        CharCode: arrayAPI[i].CharCode,
+                        Name: arrayAPI[i].Name,
+                        Value: arrayAPI[i].Value,
+                        Favorites: false
+                    }
+                    let hasFavorites = this.$storage.has(obj.CharCode);
 
-                        // проверяем наличие полученных валют в избранном
-                        for (let y = 0; y < this.valutes.length; y++){
-                            const hash = this.valutes[y].CharCode
-                            const FavoritesLS = this.$storage.has(hash)
-                            if (FavoritesLS) {
-                                // если валюта есть в избранном меняем у нее значение объекта
-                                this.valutes[y].Favorites = true
-                            }
-                        }
-                    })
+                    if (hasFavorites) {
+                        obj.Favorites = true;
+                    }
 
+                    this.valutes.push(obj);
+                }
+
+                // после получения ответа API необходимо выключить лоадер
+                this.loader = false;
+            })
         },
         methods: {
-            // метод для добавления новой валюты в избранное
-            addValute(elem) {
-                this.$storage.set(elem.CharCode, elem)
-                for (let x = 0; x < this.valutes.length; x++) {
-                    if (elem.CharCode == this.valutes[x].CharCode) {
-                        this.valutes[x].Favorites = true
+            setValute(valut) {
+                let CharCode = valut.CharCode;
+                let lengthValutes = this.valutes.length;
+
+                this.$storage.set(CharCode, valut);
+
+                for (let i = 0; i < lengthValutes; i++) {
+                    if (CharCode == this.valutes[i].CharCode) {
+                        this.valutes[i].Favorites = true;
                     }
                 }
             }

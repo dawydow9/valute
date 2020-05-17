@@ -27,15 +27,10 @@
 import Header from './components/Header'
 
 export default {
-  name: 'App',
-  data() {
-    return{
-
+    name: 'App',
+    components: {
+        Header
     }
-  },
-  components: {
-    Header
-  }
 }
 </script>
 

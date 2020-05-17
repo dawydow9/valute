@@ -18,6 +18,7 @@
                     </tr>
                 </thead>
                 <tbody>
+
                     <tr v-for="(item,index) in valutes" :key="item.id">
                         <th scope="row">{{ item.CharCode }}</th>
                         <td>{{ item.Name }}</td>
@@ -30,8 +31,10 @@
                             </button>
                         </td>
                     </tr>
+
                 </tbody>
             </table>
+
         </div>
     </div>
 </template>
@@ -45,21 +48,21 @@
             }
         },
         mounted() {
-            // загружаем все ключи записей из LocalStorage
-            const keys = this.$storage.keys()
-            for (let y = 0; y < keys.length; y++){
-                var elementStorage = this.$storage.get(keys[y])
-                // если найденный ключ является валютой, то записываем его в массив valutes
-                if (elementStorage && elementStorage.CharCode) {
-                    this.valutes.push(elementStorage)
+            let keys = this.$storage.keys();
+
+            for (let i = 0; i < keys.length; i++) {
+                let valueStorage = this.$storage.get(keys[i]);
+
+                // у объекта валюты в Local Storage также должен быть обязательно ключ CharCode
+                if (valueStorage && valueStorage.CharCode) {
+                    this.valutes.push(valueStorage)
                 }
             }
         },
         methods: {
-            // метод для удаления валюты из избранного
             removeValute(x,ind) {
-                this.$storage.remove(x)
-                this.valutes.splice(ind, 1)
+                this.$storage.remove(x);
+                this.valutes.splice(ind, 1);
             }
         }
     }
