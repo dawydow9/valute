@@ -18,84 +18,62 @@
                     </tr>
                 </thead>
                 <tbody>
-
-                    <tr v-for="item in valutes" :key="item.id">
-                        <th scope="row">{{ item.CharCode }}</th>
-                        <td>{{ item.Name }}</td>
-                        <td>{{ item.Value }}</td>
-                        <td>
-
-                            <div v-if="item.Favorites">
-                                В избранном
-                            </div>
-                            <button v-else
-                                    type="button"
-                                    class="btn btn-success p-1"
-                                    @click="setValute(item)"> Добавить
-                            </button>
-
-                        </td>
-                    </tr>
-
+                <element-valute
+                        v-for="item in valutes"
+                        :CharCode="item.CharCode"
+                        :Name="item.Name"
+                        :item="item"
+                        :valutes="valutes"
+                        :key="item.id">
+                </element-valute>
                 </tbody>
             </table>
-
         </div>
     </div>
 </template>
 
 <script>
-    import axios from 'axios'
-    export default {
-        name: "ValuteLoad",
-        data() {
-            return {
-                loader: true,
-                valutes: []
-            }
-        },
-        mounted() {
-            axios.get('https://www.cbr-xml-daily.ru/daily_json.js').then(response => {
-                let resultAPI = response.data.Valute;
-                let arrayAPI = Object.values(resultAPI);
-                let lengthArrayAPI = arrayAPI.length;
-
-                //синхронизируем полученные из API валюты с данными из Local Storage
-                for (let i = 0; i < lengthArrayAPI; i++) {
-                    let obj = {
-                        CharCode: arrayAPI[i].CharCode,
-                        Name: arrayAPI[i].Name,
-                        Value: arrayAPI[i].Value,
-                        Favorites: false
-                    }
-                    let hasFavorites = this.$storage.has(obj.CharCode);
-
-                    if (hasFavorites) {
-                        obj.Favorites = true;
-                    }
-
-                    this.valutes.push(obj);
-                }
-
-                // после получения ответа API необходимо выключить лоадер
-                this.loader = false;
-            })
-        },
-        methods: {
-            setValute(valut) {
-                let CharCode = valut.CharCode;
-                let lengthValutes = this.valutes.length;
-
-                this.$storage.set(CharCode, valut);
-
-                for (let i = 0; i < lengthValutes; i++) {
-                    if (CharCode === this.valutes[i].CharCode) {
-                        this.valutes[i].Favorites = true;
-                    }
-                }
-            }
+import axios from 'axios'
+import elementValute from "./elementValute"
+export default {
+    name: "ValuteLoad",
+    components: {
+        elementValute
+    },
+    data() {
+        return {
+            loader: true,
+            valutes: []
         }
+    },
+    mounted() {
+        axios.get('https://www.cbr-xml-daily.ru/daily_json.js').then(response => {
+            let resultAPI = response.data.Valute;
+            let arrayAPI = Object.values(resultAPI);
+            let lengthArrayAPI = arrayAPI.length;
+
+            //синхронизируем полученные из API валюты с данными из Local Storage
+            for (let i = 0; i < lengthArrayAPI; i++) {
+                let obj = {
+                    CharCode: arrayAPI[i].CharCode,
+                    Name: arrayAPI[i].Name,
+                    Value: arrayAPI[i].Value,
+                    Favorites: false
+                }
+                let hasFavorites = this.$storage.has(obj.CharCode);
+
+                if (hasFavorites) {
+                    obj.Favorites = true;
+                }
+
+                this.valutes.push(obj);
+            }
+
+            // после получения ответа API необходимо выключить лоадер
+            this.loader = false;
+        })
     }
+}
 </script>
 
 <style scoped>

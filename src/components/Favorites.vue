@@ -19,18 +19,16 @@
                 </thead>
                 <tbody>
 
-                    <tr v-for="(item,index) in valutes" :key="item.id">
-                        <th scope="row">{{ item.CharCode }}</th>
-                        <td>{{ item.Name }}</td>
-                        <td>{{ item.Value }}</td>
-                        <td>
-                            <button
-                                    type="button"
-                                    class="btn btn-success p-1"
-                                    @click="removeValute(item.CharCode,index)">Удалить
-                            </button>
-                        </td>
-                    </tr>
+                   <element-favorite
+                           v-for="(item,index) in valutes"
+                           :CharCode="item.CharCode"
+                           :Name="item.Name"
+                           :Favorites="item.Favorites"
+                           :item="item"
+                           :index="index"
+                           :valutes="valutes"
+                           :key="item.id">
+                   </element-favorite>
 
                 </tbody>
             </table>
@@ -40,8 +38,12 @@
 </template>
 
 <script>
+    import elementFavorite from "./elementFavorite"
     export default {
         name: "Favorites",
+        components: {
+            elementFavorite
+        },
         data(){
             return{
                 valutes: []
@@ -57,12 +59,6 @@
                 if (valueStorage && valueStorage.CharCode) {
                     this.valutes.push(valueStorage)
                 }
-            }
-        },
-        methods: {
-            removeValute(x,ind) {
-                this.$storage.remove(x);
-                this.valutes.splice(ind, 1);
             }
         }
     }
