@@ -36,14 +36,14 @@
 
                 if (i) {
                     this.$storage.set('name',i);
-                    this.$store.state.user = true;
+                    this.$store.commit('editAutorization',true);
                 }
             },
 
             exitSize() {
                 this.$storage.remove('name');
                 this.name = null;
-                this.$store.state.user = false;
+                this.$store.commit('editAutorization',false);
             }
 
         },
@@ -51,7 +51,7 @@
             let hasName = this.$storage.has('name');
 
             if (hasName) {
-                this.$store.state.user = true;
+                this.$store.commit('editAutorization',true);
                 this.name = this.$storage.get('name');
             }
 

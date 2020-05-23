@@ -29,9 +29,9 @@
                                 В избранном
                             </div>
                             <button v-else
-                                type="button"
-                                class="btn btn-success p-1"
-                                @click="setValute(item)"> Добавить
+                                    type="button"
+                                    class="btn btn-success p-1"
+                                    @click="setValute(item)"> Добавить
                             </button>
 
                         </td>
@@ -89,7 +89,7 @@
                 this.$storage.set(CharCode, valut);
 
                 for (let i = 0; i < lengthValutes; i++) {
-                    if (CharCode == this.valutes[i].CharCode) {
+                    if (CharCode === this.valutes[i].CharCode) {
                         this.valutes[i].Favorites = true;
                     }
                 }

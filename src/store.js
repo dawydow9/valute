@@ -6,5 +6,10 @@ Vue.use(Vuex)
 export default new Vuex.Store({
     state: {
         user: false
+    },
+    mutations: {
+        editAutorization(state, payload) {
+            state.user = payload;
+        }
     }
 })
